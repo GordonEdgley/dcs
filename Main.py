@@ -11,9 +11,15 @@ from tkinter import *
 import os
 file=pd.read_csv("PersonnelList.csv",delimiter=";",error_bad_lines=False)
 personnel=file.values
+personnel_column_names=file.columns.values
 total_rows = len(personnel) 
 total_columns = len(personnel[0]) 
 last_row=" "
+file1=pd.read_csv("ProjectList.csv",delimiter=";",error_bad_lines=False)
+project=file1.values
+total_project_rows = len(project) 
+total_project_columns = len(project[0]) 
+project_column_names=file1.columns.values
 welcome_screen=tk.Tk()
 welcome_screen.geometry("700x600") # set the configuration of GUI window 
 welcome_screen.title('Hoşgeldiniz') 
@@ -116,7 +122,7 @@ def main_page():
     main_page_screen.title("Ana Sayfa")
     main_page_screen.geometry("1150x1000")
     Button(main_page_screen, text="Personel Listesi", height="2", width="30", command=personnel_list).pack()
-    Button(main_page_screen, text="Proje Listesi", height="2", width="30").pack()
+    Button(main_page_screen, text="Proje Listesi", height="2", width="30", command=project_list).pack()
     Button(main_page_screen, text="Atama Modeli", height="2", width="30").pack()
     Button(main_page_screen, text="Yeni Kullanıcı Onaylama", height="2", width="30").pack()
     Button(main_page_screen, text="Çıkış Yap", height="2", width="30", command=delete_main_page_screen).pack()
@@ -132,12 +138,17 @@ def personnel_list():
     delete_button=Button(personnel_list_screen, text="Personel Sil", command=delete_personnel_list_screen)
     edit_button=Button(personnel_list_screen, text="Verileri Düzenle", command=delete_personnel_list_screen)
     refresh_button=Button(personnel_list_screen, text="Yenile", command=delete_personnel_list_screen)
+    for i in range(total_columns):
+          e=Entry(personnel_list_screen, width=10, fg='blue', font=('Arial',16,'bold')) 
+          e.grid(row=0, column=i) 
+          e.insert(END, personnel_column_names[i])  
     for i in range(total_rows): 
         for j in range(total_columns): 
               
             e=Entry(personnel_list_screen, width=10, fg='blue', font=('Arial',16,'bold'))    
-            e.grid(row=i, column=j) 
+            e.grid(row=i+1, column=j) 
             e.insert(END, personnel[i][j]) 
+    
     add_button.grid(row=total_rows+1, column=0, sticky="ew")
     edit_button.grid(row=total_rows+1, column=1, sticky="ew")
     delete_button.grid(row=total_rows+1, column=2, sticky="ew")
@@ -147,7 +158,35 @@ def personnel_list():
     personnel_list_screen.title("Personel Listesi")
     personnel_list_screen.geometry("2150x1680")  
     
-
+# Designing popup for project list
+def project_list():
+    
+    global project_list_screen
+    project_list_screen = Toplevel(welcome_screen)
+    back_button=Button(project_list_screen, text="Geri", command=delete_project_list_screen)
+    add_button=Button(project_list_screen, text="Proje Ekle", command=add_project_screen)
+    project_is_completed_button=Button(project_list_screen, text="Proje Tamamlandı",command=delete_project_list_screen)
+    for i in range(total_project_columns):
+          e=Entry(project_list_screen, width=10, fg='blue', font=('Arial',16,'bold')) 
+          e.grid(row=0, column=i) 
+          e.insert(END, project_column_names[i])    
+    for i in range(total_project_rows): 
+        for j in range(total_project_columns): 
+            e=Entry(project_list_screen, width=10, fg='blue', font=('Arial',16,'bold')) 
+            e.grid(row=i+1, column=j) 
+            e.insert(END, project[i][j]) 
+    
+    add_button.grid(row=total_project_rows+1, column=0, sticky="ew")
+    project_is_completed_button.grid(row=total_project_rows+1, column=2, sticky="ew")
+    back_button.grid(row=total_project_rows+1, column=4, sticky="ew")   
+    project_list_screen.title("Proje Listesi")
+    project_list_screen.geometry("2150x1680")  
+# Designing popup for new project 
+def add_project_screen():
+    global new_project_screen
+    new_project_screen = Toplevel(welcome_screen)
+    login_success_screen.title("Giriş Başarılı")
+    login_success_screen.geometry("150x100")
 
 # Designing popup for login success
  
@@ -196,6 +235,8 @@ def delete_main_page_screen():
 def delete_personnel_list_screen():
     personnel_list_screen.destroy()
 
+def delete_project_list_screen():
+    project_list_screen.destroy()
 button_log = tk.Button(welcome_screen, text='Giriş', width=25, command=login_verify) 
 button = tk.Button(welcome_screen, text='Çıkış Yap', width=25, command=welcome_screen.destroy) 
 button_log.pack() 
